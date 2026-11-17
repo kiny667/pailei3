@@ -1,0 +1,1642 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#b7332a">
+<title>排列三助手 · 选号 / 算钱 / 记账</title>
+<style>
+  :root{
+    --bg:#f5f2ec;
+    --card:#ffffff;
+    --ink:#221e1a;
+    --muted:#847b71;
+    --line:#e6e0d7;
+    --soft:#fbf9f6;
+    --red:#b7332a;
+    --red-2:#d0453a;
+    --red-soft:#fbeeec;
+    --green:#1c7a4d;
+    --amber:#b4801f;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC",system-ui,sans-serif;
+    background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5;
+  }
+  .top{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    padding:16px 22px;background:#fff;border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex;align-items:center;gap:12px;min-width:0}
+  .logo{
+    width:40px;height:40px;flex:0 0 auto;border-radius:11px;
+    background:linear-gradient(145deg,var(--red-2),var(--red));
+    color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;letter-spacing:.5px;
+    box-shadow:0 3px 10px rgba(183,51,42,.28);
+  }
+  .brand h1{margin:0;font-size:17px;font-weight:700;letter-spacing:.2px}
+  .brand p{margin:2px 0 0;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .tag{
+    font-size:11px;color:var(--amber);background:#fdf5e6;border:1px solid #f0e0c2;
+    padding:1px 7px;border-radius:99px;white-space:nowrap;
+  }
+  .budget-chip{
+    min-width:216px;background:var(--soft);border:1px solid var(--line);border-radius:11px;
+    padding:8px 12px;font-size:12px;flex:0 0 auto;
+  }
+  .bc-top{display:flex;justify-content:space-between;gap:10px;color:var(--muted)}
+  .bc-top b{color:var(--ink);font-size:13.5px}
+  .bar{height:5px;border-radius:3px;background:#ece5db;overflow:hidden;margin-top:6px}
+  .bar i{display:block;height:100%;border-radius:3px;transition:width .25s ease}
+  main{
+    max-width:1180px;margin:18px auto 44px;padding:0 18px;
+    display:grid;grid-template-columns:minmax(0,1.06fr) minmax(0,.94fr);
+    gap:16px;align-items:start;
+  }
+  .span2{grid-column:1 / -1}
+  @media (max-width:900px){
+    main{grid-template-columns:1fr;padding:0 12px;margin-top:12px}
+    .span2{grid-column:auto}
+    .top{padding:14px}
+  }
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px;box-shadow:0 1px 2px rgba(35,28,20,.04);
+  }
+  .card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+  .card-head h2{
+    margin:0;font-size:14.5px;font-weight:700;display:flex;align-items:center;gap:8px;letter-spacing:.3px;
+  }
+  .card-head h2::before{content:"";width:3px;height:14px;border-radius:2px;background:var(--red)}
+  .muted{color:var(--muted)}
+  .hint{font-size:11.5px;color:var(--muted);margin:8px 0 0;line-height:1.55}
+  .tabs{display:inline-flex;background:#f1ece4;border-radius:9px;padding:3px;gap:2px}
+  .tab{
+    border:0;background:transparent;font:inherit;font-size:12.5px;color:var(--muted);
+    padding:5px 14px;border-radius:7px;cursor:pointer;transition:.15s;
+  }
+  .tab.on{background:#fff;color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+  .row{
+    display:grid;grid-template-columns:42px minmax(0,1fr) 30px;gap:8px;align-items:center;margin-bottom:8px;
+  }
+  .row:last-of-type{margin-bottom:0}
+  .rowlab{font-size:12px;color:var(--muted);text-align:right;letter-spacing:1px}
+  .digits{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:6px}
+  @media (max-width:520px){.digits{grid-template-columns:repeat(5,minmax(0,1fr))}}
+  .digit{
+    font:inherit;font-size:16px;font-weight:600;padding:9px 0;cursor:pointer;
+    border:1px solid var(--line);background:#fcfbf9;color:var(--ink);border-radius:9px;
+    transition:.12s;line-height:1;
+  }
+  .digit:hover{border-color:#cfc6ba;background:#fff}
+  .digit.on{
+    background:var(--red);border-color:var(--red);color:#fff;
+    box-shadow:0 2px 7px rgba(183,51,42,.26);
+  }
+  .row-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:10px;flex-wrap:wrap}
+  .mini{
+    font:inherit;font-size:11.5px;color:var(--muted);background:#fff;border:1px solid var(--line);
+    border-radius:7px;padding:3px 9px;cursor:pointer;transition:.12s;
+  }
+  .mini:hover{color:var(--ink);border-color:#cfc6ba}
+  .x{
+    font:inherit;font-size:15px;line-height:1;color:#b9b0a6;background:transparent;border:0;
+    cursor:pointer;padding:2px 5px;border-radius:6px;transition:.12s;
+  }
+  .x:hover{color:var(--red);background:var(--red-soft)}
+  .preview{
+    margin-top:14px;padding:12px 14px;border-radius:11px;background:var(--red-soft);
+    border:1px solid #f3dedb;min-height:56px;display:flex;flex-direction:column;gap:5px;
+  }
+  .preview b{font-size:21px;font-weight:800;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
+  .preview .codes{
+    font-size:11.5px;color:#9a6f6a;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+    word-break:break-all;line-height:1.5;
+  }
+  .preview .ph{font-size:12.5px;color:#a8998f}
+  .actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .btn{
+    font:inherit;font-size:13px;font-weight:600;padding:9px 16px;border-radius:9px;cursor:pointer;
+    border:1px solid var(--line);background:#fff;color:var(--ink);transition:.14s;
+  }
+  .btn:hover{border-color:#cfc6ba;background:#fdfcfb}
+  .btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+  .btn.primary:hover{background:var(--red-2);border-color:var(--red-2)}
+  .btn:disabled{opacity:.4;cursor:not-allowed;background:#f2eee8;border-color:var(--line);color:var(--muted)}
+  .btn.ghost{background:transparent}
+  details{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px}
+  summary{
+    cursor:pointer;font-size:12.5px;color:var(--muted);list-style:none;user-select:none;
+    display:flex;align-items:center;gap:6px;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"＋";font-size:12px;color:var(--red)}
+  details[open] summary::before{content:"−"}
+  summary:hover{color:var(--ink)}
+  .rand-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:10px;margin-top:12px}
+  .mini-field{display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:var(--muted);min-width:0}
+  .pair{display:flex;align-items:center;gap:4px}
+  .pair i{font-style:normal;color:#c3b9ae;font-size:11px}
+  input,select{
+    font:inherit;font-size:13px;color:var(--ink);width:100%;min-width:0;
+    padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:#fff;transition:.14s;
+  }
+  input:focus,select:focus{outline:0;border-color:var(--red);box-shadow:0 0 0 3px rgba(183,51,42,.1)}
+  .field{display:flex;flex-direction:column;gap:5px;font-size:11.5px;color:var(--muted)}
+  .cart-head-row{display:flex;gap:10px;align-items:flex-end;margin-bottom:12px}
+  .cart-head-row .field{flex:0 0 132px}
+  .cart-list{display:flex;flex-direction:column;gap:8px;max-height:322px;overflow:auto;margin-bottom:12px}
+  .cart-item{border:1px solid var(--line);background:var(--soft);border-radius:10px;padding:9px 11px}
+  .ci-top{display:flex;align-items:center;gap:8px}
+  .ci-desc{font-size:12px;color:#5d554c;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ci-meta{font-size:11.5px;color:var(--muted);margin-top:4px;display:flex;gap:8px;flex-wrap:wrap}
+  .mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.3px;word-break:break-all}
+  .pill{
+    font-size:10.5px;font-weight:700;padding:1.5px 7px;border-radius:99px;white-space:nowrap;
+    background:#eef2ff;color:#3d4fa8;border:1px solid #dde3fb;
+  }
+  .pill.g3{background:#fdf1e6;color:#a3611a;border-color:#f4e2cd}
+  .pill.g6{background:#e9f6ef;color:#1c7a4d;border-color:#d3ebdf}
+  .total{
+    display:flex;justify-content:space-between;align-items:baseline;
+    border-top:1px solid var(--line);padding-top:10px;font-size:12.5px;color:var(--muted);
+  }
+  .total b{font-size:18px;color:var(--ink);font-variant-numeric:tabular-nums}
+  .empty{
+    font-size:12.5px;color:var(--muted);text-align:center;padding:22px 10px;margin:0;
+    background:var(--soft);border:1px dashed var(--line);border-radius:10px;
+  }
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:10px;margin-bottom:16px}
+  .stat{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .stat .k{font-size:11px;color:var(--muted);letter-spacing:.4px}
+  .stat .v{font-size:19px;font-weight:800;margin-top:3px;font-variant-numeric:tabular-nums;letter-spacing:-.4px}
+  .stat .s{font-size:10.5px;color:var(--muted);margin-top:2px}
+  .v.pos{color:var(--green)}
+  .v.neg{color:var(--red)}
+  .drawrow{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px}
+  .drawrow .field{flex:1 1 150px}
+  .drawrow .btn{flex:0 0 auto;height:35px}
+  .tablewrap{overflow:auto;border:1px solid var(--line);border-radius:11px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;min-width:720px}
+  th{
+    text-align:left;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.6px;
+    padding:9px 11px;background:#faf7f2;border-bottom:1px solid var(--line);white-space:nowrap;
+  }
+  td{padding:9px 11px;border-bottom:1px solid #f2ede6;vertical-align:top}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:hover{background:#fdfbf8}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  td.desc{font-size:11.5px;color:#5d554c;max-width:260px}
+  .chip{font-size:11px;padding:1.5px 8px;border-radius:99px;background:#f0ece5;color:var(--muted);white-space:nowrap}
+  .chip.win{background:#e9f6ef;color:var(--green);font-weight:700;border:1px solid #d3ebdf}
+  .chip.lose{background:#f5f1ea;color:#a1978c}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center}
+  .toolbar .spacer{flex:1}
+  .settings{border-top:1px dashed var(--line);margin-top:14px;padding-top:10px}
+  .settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px;align-items:end}
+  .notice{
+    font-size:11.5px;line-height:1.7;color:#8a6d3b;background:#fdf8ec;border:1px solid #f2e6ca;
+    border-radius:10px;padding:10px 13px;margin-bottom:14px;
+  }
+  .notice b{color:#7a5c2a}
+  .recent{margin-bottom:16px}
+  .recent-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+  .recent-head b{font-size:12.5px}
+  .recent-list{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+  .rcell{
+    flex:1 0 94px;border:1px solid var(--line);border-radius:10px;background:var(--soft);
+    padding:8px 10px;display:flex;flex-direction:column;gap:3px;min-width:0;
+  }
+  .rcell.latest{border-color:#e8c6c1;background:var(--red-soft)}
+  .rissue{font-size:10.5px;color:var(--muted);display:flex;justify-content:space-between;gap:6px;align-items:center}
+  .rshape{font-size:9.5px;color:#a99f94;border:1px solid #e7dfd4;border-radius:99px;padding:0 5px;background:#fff;white-space:nowrap}
+  .rcode{
+    font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:19px;font-weight:700;
+    letter-spacing:2px;color:var(--ink);line-height:1.25;
+  }
+  .rcell.latest .rcode{color:var(--red)}
+  .rmeta{display:flex;gap:8px;font-size:10.5px;color:var(--muted)}
+  .rmeta b{color:var(--ink);font-size:12px;font-variant-numeric:tabular-nums}
+  .charts{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;margin-bottom:16px}
+  @media (max-width:760px){.charts{grid-template-columns:1fr}}
+  .chart{background:var(--soft);border:1px solid var(--line);border-radius:11px;padding:10px 12px 8px}
+  .chart-head{display:flex;justify-content:space-between;align-items:baseline;font-size:11.5px;color:var(--muted);margin-bottom:8px;gap:8px}
+  .chart-head b{font-size:12px;color:var(--ink);font-weight:700}
+  .bars{display:flex;gap:3px;align-items:flex-end;height:112px;overflow-x:auto;overflow-y:hidden}
+  .bcol{flex:1 0 15px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;position:relative}
+  .btrack{position:relative;width:100%;height:92px;display:flex;align-items:flex-end}
+  .breal{display:block;width:100%;background:linear-gradient(180deg,var(--red-2),var(--red));border-radius:3px 3px 0 0;min-height:1px}
+  .btheory{position:absolute;left:0;right:0;height:2px;background:#b3a493;border-radius:1px;opacity:.85}
+  .blab{height:16px;display:flex;align-items:center;justify-content:center;font-size:9.5px;color:var(--muted)}
+  .legend{display:flex;gap:14px;font-size:10.5px;color:var(--muted);margin-top:4px}
+  .legend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+  .minirow{display:grid;grid-template-columns:1fr 1.3fr;gap:14px;margin-bottom:16px}
+  @media (max-width:760px){.minirow{grid-template-columns:1fr}}
+  .shape-row{display:flex;align-items:baseline;gap:8px;font-size:12px;padding:5px 0;border-bottom:1px dashed #eee7de}
+  .shape-row:last-child{border-bottom:0}
+  .shape-row b{font-variant-numeric:tabular-nums;font-size:13px;min-width:52px;text-align:right}
+  .digitchips{display:flex;flex-wrap:wrap;gap:5px;padding-top:2px}
+  .dchip{font-size:11px;border:1px solid var(--line);background:#fff;border-radius:7px;padding:3px 8px;color:#8a8178}
+  .dchip b{color:var(--ink);font-size:12px}
+  .gen{border-top:1px solid var(--line);padding-top:14px}
+  .gen-head{font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .gen-head span{font-weight:400;font-size:11.5px;color:var(--muted)}
+  .gen-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:10px;align-items:end;margin-bottom:12px}
+  .genlist{display:flex;flex-wrap:wrap;gap:6px}
+  .gencode{
+    display:inline-flex;flex-direction:column;align-items:center;gap:1px;border:1px solid #f0ddd9;
+    background:var(--red-soft);border-radius:8px;padding:5px 9px;
+    font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+  }
+  .gencode b{font-size:14px;letter-spacing:1px;color:var(--red)}
+  .gencode i{font-size:9.5px;font-style:normal;color:#a2766f;letter-spacing:0;white-space:nowrap}
+  textarea{
+    font:inherit;font-size:12px;width:100%;min-height:92px;margin-top:10px;padding:9px 11px;
+    border:1px solid var(--line);border-radius:9px;background:#fff;resize:vertical;line-height:1.65;
+    font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+  }
+  textarea:focus{outline:0;border-color:var(--red);box-shadow:0 0 0 3px rgba(183,51,42,.1)}
+  footer{
+    max-width:1180px;margin:0 auto 30px;padding:0 22px;font-size:11.5px;color:var(--muted);line-height:1.7;
+  }
+  footer b{color:#6d645a;font-weight:600}
+  .toast{
+    position:fixed;left:50%;bottom:28px;transform:translate(-50%,14px);
+    background:#2a2521;color:#fff;font-size:12.5px;padding:10px 18px;border-radius:99px;
+    box-shadow:0 8px 24px rgba(0,0,0,.22);opacity:0;pointer-events:none;transition:.22s;z-index:99;
+    max-width:88vw;text-align:center;
+  }
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <span class="logo">排3</span>
+    <div>
+      <h1>排列三助手</h1>
+      <p>选号 · 算钱 · 出号单 · 记账 · 核对 <span class="tag">不预测，只帮你管住手</span></p>
+    </div>
+  </div>
+  <div class="budget-chip" id="budgetChip"></div>
+</header>
+
+<main>
+  <section class="card">
+    <div class="card-head">
+      <h2>选号</h2>
+      <div class="tabs">
+        <button class="tab on" data-tab="straight">直选</button>
+        <button class="tab" data-tab="group">组选</button>
+      </div>
+    </div>
+    <div id="padWrap"></div>
+    <div class="preview" id="preview"></div>
+    <div class="actions" id="pickActions"></div>
+
+    <details id="randBox">
+      <summary>机选（可加条件）</summary>
+      <div class="rand-grid">
+        <label class="mini-field"><span>注数</span>
+          <input id="rCount" type="number" value="5" min="1" max="50" inputmode="numeric">
+        </label>
+        <label class="mini-field"><span>玩法</span>
+          <select id="rMode">
+            <option value="straight">直选单式</option>
+            <option value="g6">组六单式</option>
+            <option value="g3">组三单式</option>
+          </select>
+        </label>
+        <label class="mini-field"><span>和值</span>
+          <span class="pair"><input id="rSumMin" placeholder="低" inputmode="numeric"><i>–</i><input id="rSumMax" placeholder="高" inputmode="numeric"></span>
+        </label>
+        <label class="mini-field"><span>跨度</span>
+          <span class="pair"><input id="rSpanMin" placeholder="低" inputmode="numeric"><i>–</i><input id="rSpanMax" placeholder="高" inputmode="numeric"></span>
+        </label>
+        <label class="mini-field"><span>奇数个数</span>
+          <select id="rOdd">
+            <option value="any">不限</option>
+            <option value="0">0 个</option>
+            <option value="1">1 个</option>
+            <option value="2">2 个</option>
+            <option value="3">3 个</option>
+          </select>
+        </label>
+        <label class="mini-field"><span>必含</span>
+          <input id="rMust" placeholder="如 1,5">
+        </label>
+        <label class="mini-field"><span>排除</span>
+          <input id="rBan" placeholder="如 0,9">
+        </label>
+      </div>
+      <div class="actions"><button class="btn primary" id="btnRand">生成并加入清单</button></div>
+      <p class="hint">条件只是筛选，不提高概率：任何条件组合下，单注中直选的机会都是 1/1000。</p>
+    </details>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>本期清单</h2>
+      <span class="muted" id="cartCount">0 注</span>
+    </div>
+    <div class="cart-head-row">
+      <label class="field"><span>期号</span>
+        <input id="issue" placeholder="如 24331" autocomplete="off">
+      </label>
+      <button class="mini" id="btnClearCart" style="margin-bottom:5px">清空清单</button>
+    </div>
+    <div class="cart-list" id="cartList"></div>
+    <div class="total"><span>合计</span><span><b id="cartTotal">¥0</b></span></div>
+    <div class="actions">
+      <button class="btn primary" id="btnCopy">复制出号单</button>
+      <button class="btn" id="btnSave">存入账本</button>
+    </div>
+    <p class="hint" id="cartHint"></p>
+  </section>
+
+  <section class="card span2">
+    <div class="card-head">
+      <h2>历史统计 · 参考号</h2>
+      <span class="muted" id="histMeta"></span>
+    </div>
+
+    <div class="notice">
+      <b>先把话说清楚：</b>每期开奖互相独立，和值、跨度只是当期号码算出来的结果，不携带下一期的任何信息。
+      下面的分布是对历史的描述，<b>预测不了下一期</b>；参考号生成器只是按历史热门和值/跨度去抽号，
+      任何一注中奖概率始终是 1/1000，加权不会改变这一点。
+    </div>
+
+    <div class="recent">
+      <div class="recent-head">
+        <b>最近 10 期 · 和值与跨度</b>
+        <span class="muted" id="recentMeta"></span>
+      </div>
+      <div class="recent-list" id="recentList"></div>
+    </div>
+
+    <div class="charts">
+      <div class="chart">
+        <div class="chart-head"><b>和值分布</b><span id="sumMeta"></span></div>
+        <div class="bars" id="sumBars"></div>
+        <div class="legend">
+          <span><i style="background:var(--red)"></i>实际频次</span>
+          <span><i style="background:#b3a493"></i>理论期望（悬停柱子上看数值）</span>
+        </div>
+      </div>
+      <div class="chart">
+        <div class="chart-head"><b>跨度分布</b><span id="spanMeta"></span></div>
+        <div class="bars" id="spanBars"></div>
+        <div class="legend">
+          <span><i style="background:var(--red)"></i>实际</span>
+          <span><i style="background:#b3a493"></i>理论</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="minirow">
+      <div>
+        <div class="chart-head"><b>形态占比</b><span>实际 / 理论</span></div>
+        <div id="shapeStats"></div>
+      </div>
+      <div>
+        <div class="chart-head"><b>数字出现次数</b><span>每个数字在三个位置上的总出现次数</span></div>
+        <div class="digitchips" id="digitStats"></div>
+      </div>
+    </div>
+
+    <div class="gen">
+      <div class="gen-head">参考号生成器 <span>按历史分布抽号，不是预测</span></div>
+      <div class="gen-grid">
+        <label class="field"><span>玩法</span>
+          <select id="genMode">
+            <option value="straight">直选单式</option>
+            <option value="g6">组选6</option>
+            <option value="g3">组选3</option>
+          </select>
+        </label>
+        <label class="field"><span>注数</span>
+          <input id="genCount" type="number" value="5" min="1" max="50" inputmode="numeric">
+        </label>
+        <label class="field"><span>抽样方式</span>
+          <select id="genBasis">
+            <option value="weighted">按历史热度加权</option>
+            <option value="uniform">均匀随机（对照用）</option>
+          </select>
+        </label>
+        <button class="btn primary" id="btnGen">生成参考号</button>
+      </div>
+      <div id="genOut"></div>
+      <div class="actions"><button class="btn" id="btnGenAdd" disabled>把这批加入清单</button></div>
+    </div>
+
+    <details>
+      <summary>历史数据：<span id="histCount">—</span> · 粘贴导入 / 导出 / 更新</summary>
+      <div class="actions">
+        <button class="mini" id="btnHistOnline">尝试联网更新</button>
+        <button class="mini" id="btnHistExport">导出 JSON</button>
+        <button class="mini" id="btnHistReset">恢复内置数据</button>
+      </div>
+      <textarea id="histPaste" placeholder="每行一期，下面三种写法都认：&#10;26307 0 6 7&#10;26307 067&#10;26307,0,6,7"></textarea>
+      <div class="actions">
+        <button class="btn" id="btnHistImport">解析并导入</button>
+        <span class="muted" id="histPasteHint"></span>
+      </div>
+    </details>
+  </section>
+
+  <section class="card span2">
+    <div class="card-head">
+      <h2>账本</h2>
+      <span class="muted" id="ledgerCount"></span>
+    </div>
+    <div class="stats" id="stats"></div>
+
+    <div class="drawrow">
+      <label class="field"><span>开奖期号</span>
+        <input id="drawIssue" placeholder="要核对的期号" autocomplete="off">
+      </label>
+      <label class="field"><span>开奖号码</span>
+        <input id="drawCode" placeholder="3 位数字，如 123" inputmode="numeric" autocomplete="off">
+      </label>
+      <button class="btn primary" id="btnDraw">记录并核对</button>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th>期号</th><th>内容</th><th style="text-align:right">注数</th>
+            <th style="text-align:right">金额</th><th>开奖号</th><th>结果</th>
+            <th style="text-align:right">奖金</th><th style="text-align:right">净额</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="slipBody"></tbody>
+      </table>
+    </div>
+
+    <div class="toolbar">
+      <button class="mini" id="btnExport">导出备份</button>
+      <button class="mini" id="btnImport">导入备份</button>
+      <button class="mini" id="btnCsv">导出 CSV</button>
+      <span class="spacer"></span>
+      <button class="mini" id="btnWipe" style="color:#b7332a">清空数据</button>
+      <input type="file" id="fileInput" accept="application/json,.json" hidden>
+    </div>
+
+    <details class="settings">
+      <summary>预算设置（触发上限会拦住「存入账本」）</summary>
+      <div class="settings-grid">
+        <label class="field"><span>每日上限（元，0 = 不限）</span>
+          <input id="dailyLimit" type="number" min="0" step="10" inputmode="numeric">
+        </label>
+        <label class="field"><span>每月上限（元，0 = 不限）</span>
+          <input id="monthlyLimit" type="number" min="0" step="50" inputmode="numeric">
+        </label>
+        <button class="btn" id="btnBudget">保存额度</button>
+      </div>
+    </details>
+  </section>
+</main>
+
+<footer>
+  <b>边界说明：</b>每注 2 元，直选 1040 元/注、组选 3 是 346 元/注、组选 6 是 173 元/注，整体返奖率约 52%，
+  每期开奖互相独立。本工具不预测号码、不代购、不联网下注，只帮你算注数、出单子、记清账；
+  实际投注请到实体体彩店。理性购彩，量力而行。
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   核心计算（纯函数，可单独测试）
+   ============================================================ */
+/* CORE-START */
+const UNIT = 2;
+const PRIZE = { straight: 1040, g3: 346, g6: 173 };
+const MODE_LABEL = { straight: '直选', g3: '组选3', g6: '组选6' };
+
+function nCk(n, k) {
+  if (n < 0 || k < 0 || k > n) return 0;
+  let r = 1;
+  for (let i = 1; i <= k; i++) r = (r * (n - k + i)) / i;
+  return Math.round(r);
+}
+function straightCount(a, b, c) { return a.length * b.length * c.length; }
+function g3Count(n) { return n >= 2 ? n * (n - 1) : 0; }
+function g6Count(n) { return nCk(n, 3); }
+
+function straightCodes(A, B, C) {
+  const out = [];
+  for (const a of A) for (const b of B) for (const c of C) out.push('' + a + b + c);
+  return out;
+}
+function g3Codes(P) {
+  const out = [];
+  for (const p of P) for (const s of P) if (s !== p) out.push([p, p, s].sort((x, y) => x - y).join(''));
+  return out;
+}
+function g6Codes(P) {
+  const out = [];
+  const q = P.slice().sort((x, y) => x - y);
+  for (let i = 0; i < q.length; i++)
+    for (let j = i + 1; j < q.length; j++)
+      for (let k = j + 1; k < q.length; k++) out.push('' + q[i] + q[j] + q[k]);
+  return out;
+}
+
+function typeOf(code) {
+  const s = new Set(String(code).split(''));
+  return s.size === 1 ? 'bao' : s.size === 2 ? 'g3' : s.size === 3 ? 'g6' : 'bad';
+}
+function sortStr(code) { return String(code).split('').sort().join(''); }
+function wins(mode, code, draw) {
+  if (!/^\d{3}$/.test(String(draw || ''))) return false;
+  if (mode === 'straight') return String(code) === String(draw);
+  const t = typeOf(draw);
+  if (mode === 'g3') return t === 'g3' && sortStr(draw) === sortStr(code);
+  if (mode === 'g6') return t === 'g6' && sortStr(draw) === sortStr(code);
+  return false;
+}
+function slipResult(slip, draws) {
+  const draw = draws[slip.issue];
+  if (!draw) return { pending: true, win: 0, prize: 0, hits: [] };
+  let win = 0, prize = 0;
+  const hits = [];
+  for (const it of slip.items) {
+    for (const code of it.codes) {
+      if (wins(it.mode, code, draw)) { win++; prize += PRIZE[it.mode]; hits.push(code); }
+    }
+  }
+  return { pending: false, win, prize, hits };
+}
+function condOk(d, c) {
+  const sum = d[0] + d[1] + d[2];
+  const span = Math.max(...d) - Math.min(...d);
+  const odd = d.filter(x => x % 2 === 1).length;
+  if (c.sumMin != null && sum < c.sumMin) return false;
+  if (c.sumMax != null && sum > c.sumMax) return false;
+  if (c.spanMin != null && span < c.spanMin) return false;
+  if (c.spanMax != null && span > c.spanMax) return false;
+  if (c.odd !== 'any' && c.odd != null && odd !== Number(c.odd)) return false;
+  if (c.must && c.must.length && !c.must.every(x => d.includes(x))) return false;
+  if (c.ban && c.ban.length && c.ban.some(x => d.includes(x))) return false;
+  return true;
+}
+function sumOf(code) { return (+code[0]) + (+code[1]) + (+code[2]); }
+function spanOf(code) { const a = [+code[0], +code[1], +code[2]]; return Math.max(...a) - Math.min(...a); }
+function shapeOf(code) {
+  const n = new Set(String(code).split('')).size;
+  return n === 1 ? 'bao' : n === 2 ? 'g3' : 'g6';
+}
+
+// 直选 1000 注中，每个和值 / 跨度各有多少注（理论分布，枚举算出，不手写）
+const THEORY = (function () {
+  const sum = new Array(28).fill(0), span = new Array(10).fill(0);
+  for (let a = 0; a < 10; a++) for (let b = 0; b < 10; b++) for (let c = 0; c < 10; c++) {
+    sum[a + b + c]++;
+    span[Math.max(a, b, c) - Math.min(a, b, c)]++;
+  }
+  return { sum, span };
+})();
+
+function histStats(history) {
+  const sum = new Array(28).fill(0), span = new Array(10).fill(0);
+  const shape = { g6: 0, g3: 0, bao: 0 };
+  const digit = new Array(10).fill(0);
+  let n = 0;
+  for (const r of history || []) {
+    const code = String((r && r[1]) || '');
+    if (!/^\d{3}$/.test(code)) continue;
+    n++;
+    sum[sumOf(code)]++;
+    span[spanOf(code)]++;
+    shape[shapeOf(code)]++;
+    for (const ch of code) digit[+ch]++;
+  }
+  return { n, sum, span, shape, digit };
+}
+
+// 号码权重 = 和值热度 × 跨度热度（相对理论频次的倍数，带 +1 平滑防除零）
+function refWeightMap(history) {
+  const st = histStats(history);
+  const n = st.n;
+  const sums = new Array(28).fill(1), spans = new Array(10).fill(1);
+  if (n) {
+    for (let s = 0; s < 28; s++) sums[s] = (st.sum[s] + 1) / (n * THEORY.sum[s] / 1000 + 1);
+    for (let k = 0; k < 10; k++) spans[k] = (st.span[k] + 1) / (n * THEORY.span[k] / 1000 + 1);
+  }
+  return { sums, spans, weightOf: code => sums[sumOf(code)] * spans[spanOf(code)] };
+}
+
+function topIdx(arr) {
+  let best = 0;
+  for (let i = 1; i < arr.length; i++) if (arr[i] > arr[best]) best = i;
+  return best;
+}
+function topIndexes(arr, k) {
+  return arr.map((v, i) => [v, i]).sort((a, b) => b[0] - a[0] || a[1] - b[1]).slice(0, k).map(x => x[1]);
+}
+
+// 不放回加权抽样；rnd 可注入，方便测试
+function sampleWeighted(pool, weights, n, rnd) {
+  const codes = pool.slice();
+  const ws = pool.map((_, i) => Math.max(0, Number(weights[i]) || 0));
+  const out = [];
+  while (out.length < n && codes.length) {
+    let total = 0;
+    for (const w of ws) total += w;
+    let pick = 0;
+    if (total <= 0) {
+      pick = Math.floor(rnd(1e9) / 1e9 * codes.length);
+      if (pick >= codes.length) pick = codes.length - 1;
+    } else {
+      const r = rnd(1e9) / 1e9 * total;
+      let acc = 0;
+      pick = ws.length - 1;
+      for (let j = 0; j < ws.length; j++) { acc += ws[j]; if (r < acc) { pick = j; break; } }
+    }
+    out.push(codes[pick]);
+    codes.splice(pick, 1);
+    ws.splice(pick, 1);
+  }
+  return out;
+}
+/* CORE-END */
+
+/* 内置历史开奖数据：[[期号, 号码, 日期], ...]，新→旧。由 fetch-history.mjs 写入。 */
+const HISTORY_SEED = [["26307","067","2026-11-17"],["26306","032","2026-11-16"],["26305","260","2026-11-15"],["26304","290","2026-11-14"],["26303","286","2026-11-13"],["26302","982","2026-11-12"],["26301","544","2026-11-11"],["26300","398","2026-11-10"],["26299","170","2026-11-09"],["26298","597","2026-11-08"],["26297","777","2026-11-07"],["26296","320","2026-11-06"],["26295","291","2026-11-05"],["26294","329","2026-11-04"],["26293","811","2026-11-03"],["26292","446","2026-11-02"],["26291","276","2026-11-01"],["26290","039","2026-10-31"],["26289","299","2026-10-30"],["26288","415","2026-10-29"],["26287","154","2026-10-28"],["26286","218","2026-10-27"],["26285","613","2026-10-26"],["26284","677","2026-10-25"],["26283","258","2026-10-24"],["26282","647","2026-10-23"],["26281","983","2026-10-22"],["26280","864","2026-10-21"],["26279","471","2026-10-20"],["26278","583","2026-10-19"],["26277","278","2026-10-18"],["26276","906","2026-10-17"],["26275","206","2026-10-16"],["26274","361","2026-10-15"],["26273","703","2026-10-14"],["26272","890","2026-10-13"],["26271","622","2026-10-12"],["26270","641","2026-10-11"],["26269","067","2026-10-10"],["26268","300","2026-10-09"],["26267","216","2026-10-08"],["26266","121","2026-10-07"],["26265","954","2026-10-06"],["26264","592","2026-10-05"],["26263","171","2026-09-30"],["26262","273","2026-09-29"],["26261","538","2026-09-28"],["26260","449","2026-09-27"],["26259","379","2026-09-26"],["26258","137","2026-09-25"],["26257","493","2026-09-24"],["26256","690","2026-09-23"],["26255","764","2026-09-22"],["26254","069","2026-09-21"],["26253","893","2026-09-20"],["26252","190","2026-09-19"],["26251","237","2026-09-18"],["26250","985","2026-09-17"],["26249","872","2026-09-16"],["26248","126","2026-09-15"],["26247","051","2026-09-14"],["26246","286","2026-09-13"],["26245","125","2026-09-12"],["26244","620","2026-09-11"],["26243","915","2026-09-10"],["26242","244","2026-09-09"],["26241","050","2026-09-08"],["26240","579","2026-09-07"],["26239","470","2026-09-06"],["26238","361","2026-09-05"],["26237","950","2026-09-04"],["26236","173","2026-09-03"],["26235","779","2026-09-02"],["26234","301","2026-09-01"],["26233","163","2026-08-31"],["26232","802","2026-08-30"],["26231","187","2026-08-29"],["26230","946","2026-08-28"],["26229","280","2026-08-27"],["26228","560","2026-08-26"],["26227","431","2026-08-25"],["26226","201","2026-08-24"],["26225","116","2026-08-23"],["26224","912","2026-08-22"],["26223","223","2026-08-21"],["26222","877","2026-08-20"],["26221","969","2026-08-19"],["26220","482","2026-08-18"],["26219","662","2026-08-17"],["26218","079","2026-08-16"],["26217","019","2026-08-15"],["26216","953","2026-08-14"],["26215","927","2026-08-13"],["26214","014","2026-08-12"],["26213","740","2026-08-11"],["26212","839","2026-08-10"],["26211","515","2026-08-09"],["26210","094","2026-08-08"],["26209","982","2026-08-07"],["26208","471","2026-08-06"],["26207","866","2026-08-05"],["26206","709","2026-08-04"],["26205","806","2026-08-03"],["26204","674","2026-08-02"],["26203","135","2026-08-01"],["26202","961","2026-07-31"],["26201","862","2026-07-30"],["26200","077","2026-07-29"],["26199","305","2026-07-28"],["26198","719","2026-07-27"],["26197","473","2026-07-26"],["26196","726","2026-07-25"],["26195","595","2026-07-24"],["26194","701","2026-07-23"],["26193","180","2026-07-22"],["26192","306","2026-07-21"],["26191","069","2026-07-20"],["26190","554","2026-07-19"],["26189","950","2026-07-18"],["26188","607","2026-07-17"],["26187","086","2026-07-16"],["26186","665","2026-07-15"],["26185","785","2026-07-14"],["26184","142","2026-07-13"],["26183","352","2026-07-12"],["26182","313","2026-07-11"],["26181","124","2026-07-10"],["26180","005","2026-07-09"],["26179","396","2026-07-08"],["26178","837","2026-07-07"],["26177","826","2026-07-06"],["26176","584","2026-07-05"],["26175","838","2026-07-04"],["26174","157","2026-07-03"],["26173","259","2026-07-02"],["26172","771","2026-07-01"],["26171","048","2026-06-30"],["26170","417","2026-06-29"],["26169","884","2026-06-28"],["26168","192","2026-06-27"],["26167","012","2026-06-26"],["26166","229","2026-06-25"],["26165","294","2026-06-24"],["26164","715","2026-06-23"],["26163","346","2026-06-22"],["26162","369","2026-06-21"],["26161","562","2026-06-20"],["26160","551","2026-06-19"],["26159","557","2026-06-18"],["26158","911","2026-06-17"],["26157","830","2026-06-16"],["26156","641","2026-06-15"],["26155","485","2026-06-14"],["26154","473","2026-06-13"],["26153","389","2026-06-12"],["26152","151","2026-06-11"],["26151","983","2026-06-10"],["26150","340","2026-06-09"],["26149","325","2026-06-08"],["26148","065","2026-06-07"],["26147","590","2026-06-06"],["26146","154","2026-06-05"],["26145","993","2026-06-04"],["26144","462","2026-06-03"],["26143","744","2026-06-02"],["26142","916","2026-06-01"],["26141","215","2026-05-31"],["26140","421","2026-05-30"],["26139","198","2026-05-29"],["26138","263","2026-05-28"],["26137","544","2026-05-27"],["26136","466","2026-05-26"],["26135","939","2026-05-25"],["26134","515","2026-05-24"],["26133","543","2026-05-23"],["26132","443","2026-05-22"],["26131","968","2026-05-21"],["26130","070","2026-05-20"],["26129","683","2026-05-19"],["26128","512","2026-05-18"],["26127","936","2026-05-17"],["26126","835","2026-05-16"],["26125","867","2026-05-15"],["26124","785","2026-05-14"],["26123","955","2026-05-13"],["26122","747","2026-05-12"],["26121","040","2026-05-11"],["26120","296","2026-05-10"],["26119","222","2026-05-09"],["26118","272","2026-05-08"],["26117","091","2026-05-07"],["26116","951","2026-05-06"],["26115","333","2026-05-05"],["26114","017","2026-05-04"],["26113","925","2026-05-03"],["26112","652","2026-05-02"],["26111","877","2026-05-01"],["26110","343","2026-04-30"],["26109","088","2026-04-29"],["26108","656","2026-04-28"],["26107","154","2026-04-27"],["26106","343","2026-04-26"],["26105","217","2026-04-25"],["26104","786","2026-04-24"],["26103","901","2026-04-23"],["26102","490","2026-04-22"],["26101","090","2026-04-21"],["26100","207","2026-04-20"],["26099","424","2026-04-19"],["26098","974","2026-04-18"],["26097","226","2026-04-17"],["26096","643","2026-04-16"],["26095","568","2026-04-15"],["26094","938","2026-04-14"],["26093","998","2026-04-13"],["26092","761","2026-04-12"],["26091","202","2026-04-11"],["26090","954","2026-04-10"],["26089","216","2026-04-09"],["26088","474","2026-04-08"],["26087","070","2026-04-07"],["26086","334","2026-04-06"],["26085","020","2026-04-05"],["26084","004","2026-04-04"],["26083","903","2026-04-03"],["26082","048","2026-04-02"],["26081","690","2026-04-01"],["26080","770","2026-03-31"],["26079","195","2026-03-30"],["26078","634","2026-03-29"],["26077","780","2026-03-28"],["26076","419","2026-03-27"],["26075","437","2026-03-26"],["26074","406","2026-03-25"],["26073","325","2026-03-24"],["26072","115","2026-03-23"],["26071","551","2026-03-22"],["26070","131","2026-03-21"],["26069","114","2026-03-20"],["26068","840","2026-03-19"],["26067","428","2026-03-18"],["26066","807","2026-03-17"],["26065","851","2026-03-16"],["26064","528","2026-03-15"],["26063","723","2026-03-14"],["26062","315","2026-03-13"],["26061","347","2026-03-12"],["26060","118","2026-03-11"],["26059","209","2026-03-10"],["26058","590","2026-03-09"],["26057","479","2026-03-08"],["26056","119","2026-03-07"],["26055","537","2026-03-06"],["26054","655","2026-03-05"],["26053","744","2026-03-04"],["26052","649","2026-03-03"],["26051","045","2026-03-02"],["26050","435","2026-03-01"],["26049","592","2026-02-28"],["26048","097","2026-02-27"],["26047","330","2026-02-26"],["26046","703","2026-02-25"],["26045","144","2026-02-24"],["26044","051","2026-02-13"],["26043","179","2026-02-12"],["26042","795","2026-02-11"],["26041","639","2026-02-10"],["26040","009","2026-02-09"],["26039","852","2026-02-08"],["26038","789","2026-02-07"],["26037","724","2026-02-06"],["26036","788","2026-02-05"],["26035","717","2026-02-04"],["26034","216","2026-02-03"],["26033","141","2026-02-02"],["26032","730","2026-02-01"],["26031","786","2026-01-31"],["26030","811","2026-01-30"],["26029","613","2026-01-29"],["26028","499","2026-01-28"],["26027","084","2026-01-27"],["26026","291","2026-01-26"],["26025","181","2026-01-25"],["26024","268","2026-01-24"],["26023","495","2026-01-23"],["26022","255","2026-01-22"],["26021","263","2026-01-21"],["26020","095","2026-01-20"],["26019","848","2026-01-19"],["26018","896","2026-01-18"],["26017","112","2026-01-17"],["26016","215","2026-01-16"],["26015","202","2026-01-15"],["26014","833","2026-01-14"],["26013","477","2026-01-13"],["26012","522","2026-01-12"],["26011","030","2026-01-11"],["26010","920","2026-01-10"],["26009","248","2026-01-09"],["26008","509","2026-01-08"],["26007","126","2026-01-07"],["26006","718","2026-01-06"],["26005","061","2026-01-05"],["26004","878","2026-01-04"],["26003","086","2026-01-03"],["26002","689","2026-01-02"],["26001","830","2026-01-01"],["25351","617","2025-12-31"],["25350","673","2025-12-30"],["25349","032","2025-12-29"],["25348","373","2025-12-28"],["25347","695","2025-12-27"],["25346","826","2025-12-26"],["25345","431","2025-12-25"],["25344","495","2025-12-24"],["25343","012","2025-12-23"],["25342","079","2025-12-22"],["25341","817","2025-12-21"],["25340","255","2025-12-20"],["25339","900","2025-12-19"],["25338","164","2025-12-18"],["25337","554","2025-12-17"],["25336","412","2025-12-16"],["25335","276","2025-12-15"],["25334","583","2025-12-14"],["25333","961","2025-12-13"],["25332","939","2025-12-12"],["25331","980","2025-12-11"],["25330","594","2025-12-10"],["25329","370","2025-12-09"],["25328","825","2025-12-08"],["25327","829","2025-12-07"],["25326","045","2025-12-06"],["25325","836","2025-12-05"],["25324","513","2025-12-04"],["25323","687","2025-12-03"],["25322","148","2025-12-02"],["25321","568","2025-12-01"],["25320","725","2025-11-30"],["25319","865","2025-11-29"],["25318","438","2025-11-28"],["25317","756","2025-11-27"],["25316","918","2025-11-26"],["25315","973","2025-11-25"],["25314","802","2025-11-24"],["25313","445","2025-11-23"],["25312","109","2025-11-22"],["25311","114","2025-11-21"],["25310","016","2025-11-20"],["25309","527","2025-11-19"],["25308","234","2025-11-18"],["25307","618","2025-11-17"],["25306","178","2025-11-16"],["25305","497","2025-11-15"],["25304","079","2025-11-14"],["25303","943","2025-11-13"],["25302","016","2025-11-12"],["25301","582","2025-11-11"],["25300","843","2025-11-10"],["25299","300","2025-11-09"],["25298","141","2025-11-08"],["25297","453","2025-11-07"],["25296","052","2025-11-06"],["25295","124","2025-11-05"],["25294","994","2025-11-04"],["25293","094","2025-11-03"],["25292","673","2025-11-02"],["25291","948","2025-11-01"],["25290","125","2025-10-31"],["25289","685","2025-10-30"],["25288","504","2025-10-29"],["25287","180","2025-10-28"],["25286","641","2025-10-27"],["25285","905","2025-10-26"],["25284","247","2025-10-25"],["25283","057","2025-10-24"],["25282","096","2025-10-23"],["25281","707","2025-10-22"],["25280","539","2025-10-21"],["25279","375","2025-10-20"],["25278","627","2025-10-19"],["25277","432","2025-10-18"],["25276","982","2025-10-17"],["25275","150","2025-10-16"],["25274","787","2025-10-15"],["25273","417","2025-10-14"],["25272","767","2025-10-13"],["25271","898","2025-10-12"],["25270","018","2025-10-11"],["25269","875","2025-10-10"],["25268","321","2025-10-09"],["25267","856","2025-10-08"],["25266","742","2025-10-07"],["25265","281","2025-10-06"],["25264","202","2025-10-05"],["25263","148","2025-09-30"],["25262","512","2025-09-29"],["25261","877","2025-09-28"],["25260","514","2025-09-27"],["25259","420","2025-09-26"],["25258","038","2025-09-25"],["25257","561","2025-09-24"],["25256","797","2025-09-23"],["25255","583","2025-09-22"],["25254","628","2025-09-21"],["25253","693","2025-09-20"],["25252","190","2025-09-19"],["25251","558","2025-09-18"],["25250","178","2025-09-17"],["25249","532","2025-09-16"],["25248","983","2025-09-15"],["25247","364","2025-09-14"],["25246","207","2025-09-13"],["25245","994","2025-09-12"],["25244","758","2025-09-11"],["25243","812","2025-09-10"],["25242","523","2025-09-09"],["25241","286","2025-09-08"],["25240","627","2025-09-07"],["25239","220","2025-09-06"],["25238","754","2025-09-05"],["25237","713","2025-09-04"],["25236","151","2025-09-03"],["25235","321","2025-09-02"],["25234","282","2025-09-01"],["25233","143","2025-08-31"],["25232","397","2025-08-30"],["25231","258","2025-08-29"],["25230","178","2025-08-28"],["25229","123","2025-08-27"],["25228","164","2025-08-26"],["25227","453","2025-08-25"],["25226","373","2025-08-24"],["25225","009","2025-08-23"],["25224","021","2025-08-22"],["25223","795","2025-08-21"],["25222","660","2025-08-20"],["25221","791","2025-08-19"],["25220","353","2025-08-18"],["25219","784","2025-08-17"],["25218","307","2025-08-16"],["25217","242","2025-08-15"],["25216","410","2025-08-14"],["25215","695","2025-08-13"],["25214","176","2025-08-12"],["25213","868","2025-08-11"],["25212","223","2025-08-10"],["25211","050","2025-08-09"],["25210","622","2025-08-08"],["25209","921","2025-08-07"],["25208","309","2025-08-06"],["25207","154","2025-08-05"],["25206","605","2025-08-04"],["25205","783","2025-08-03"],["25204","830","2025-08-02"],["25203","735","2025-08-01"],["25202","253","2025-07-31"],["25201","401","2025-07-30"],["25200","211","2025-07-29"],["25199","485","2025-07-28"],["25198","717","2025-07-27"],["25197","869","2025-07-26"],["25196","941","2025-07-25"],["25195","210","2025-07-24"],["25194","270","2025-07-23"],["25193","265","2025-07-22"],["25192","683","2025-07-21"],["25191","669","2025-07-20"],["25190","499","2025-07-19"],["25189","556","2025-07-18"],["25188","623","2025-07-17"],["25187","641","2025-07-16"],["25186","514","2025-07-15"],["25185","308","2025-07-14"],["25184","221","2025-07-13"],["25183","177","2025-07-12"],["25182","721","2025-07-11"],["25181","894","2025-07-10"],["25180","889","2025-07-09"],["25179","972","2025-07-08"],["25178","714","2025-07-07"],["25177","977","2025-07-06"],["25176","949","2025-07-05"],["25175","413","2025-07-04"],["25174","131","2025-07-03"],["25173","673","2025-07-02"],["25172","724","2025-07-01"],["25171","105","2025-06-30"],["25170","502","2025-06-29"],["25169","699","2025-06-28"],["25168","203","2025-06-27"],["25167","267","2025-06-26"],["25166","696","2025-06-25"],["25165","103","2025-06-24"],["25164","519","2025-06-23"],["25163","766","2025-06-22"],["25162","317","2025-06-21"],["25161","248","2025-06-20"],["25160","171","2025-06-19"],["25159","274","2025-06-18"],["25158","882","2025-06-17"],["25157","250","2025-06-16"],["25156","638","2025-06-15"],["25155","040","2025-06-14"],["25154","989","2025-06-13"],["25153","894","2025-06-12"],["25152","747","2025-06-11"],["25151","686","2025-06-10"],["25150","212","2025-06-09"],["25149","772","2025-06-08"],["25148","557","2025-06-07"],["25147","023","2025-06-06"],["25146","822","2025-06-05"],["25145","471","2025-06-04"],["25144","389","2025-06-03"],["25143","944","2025-06-02"],["25142","343","2025-06-01"],["25141","475","2025-05-31"],["25140","267","2025-05-30"],["25139","155","2025-05-29"],["25138","895","2025-05-28"],["25137","721","2025-05-27"],["25136","324","2025-05-26"],["25135","816","2025-05-25"],["25134","510","2025-05-24"],["25133","866","2025-05-23"],["25132","275","2025-05-22"],["25131","367","2025-05-21"],["25130","068","2025-05-20"],["25129","189","2025-05-19"],["25128","870","2025-05-18"],["25127","492","2025-05-17"],["25126","184","2025-05-16"],["25125","627","2025-05-15"],["25124","527","2025-05-14"],["25123","842","2025-05-13"],["25122","030","2025-05-12"],["25121","424","2025-05-11"],["25120","401","2025-05-10"],["25119","703","2025-05-09"],["25118","255","2025-05-08"],["25117","170","2025-05-07"],["25116","360","2025-05-06"],["25115","847","2025-05-05"],["25114","192","2025-05-04"],["25113","029","2025-05-03"],["25112","483","2025-05-02"],["25111","588","2025-05-01"],["25110","116","2025-04-30"],["25109","619","2025-04-29"],["25108","877","2025-04-28"],["25107","726","2025-04-27"],["25106","076","2025-04-26"],["25105","084","2025-04-25"],["25104","144","2025-04-24"],["25103","471","2025-04-23"],["25102","233","2025-04-22"],["25101","911","2025-04-21"],["25100","997","2025-04-20"],["25099","174","2025-04-19"],["25098","192","2025-04-18"],["25097","171","2025-04-17"],["25096","948","2025-04-16"],["25095","672","2025-04-15"],["25094","534","2025-04-14"],["25093","432","2025-04-13"],["25092","721","2025-04-12"],["25091","830","2025-04-11"],["25090","993","2025-04-10"],["25089","208","2025-04-09"],["25088","222","2025-04-08"],["25087","845","2025-04-07"],["25086","634","2025-04-06"],["25085","353","2025-04-05"],["25084","304","2025-04-04"],["25083","593","2025-04-03"],["25082","344","2025-04-02"],["25081","766","2025-04-01"],["25080","738","2025-03-31"],["25079","296","2025-03-30"],["25078","113","2025-03-29"],["25077","425","2025-03-28"],["25076","407","2025-03-27"],["25075","743","2025-03-26"],["25074","179","2025-03-25"],["25073","132","2025-03-24"],["25072","935","2025-03-23"],["25071","462","2025-03-22"],["25070","771","2025-03-21"],["25069","934","2025-03-20"],["25068","975","2025-03-19"],["25067","671","2025-03-18"],["25066","184","2025-03-17"],["25065","990","2025-03-16"],["25064","656","2025-03-15"],["25063","466","2025-03-14"],["25062","257","2025-03-13"],["25061","490","2025-03-12"],["25060","793","2025-03-11"],["25059","771","2025-03-10"],["25058","672","2025-03-09"],["25057","765","2025-03-08"],["25056","716","2025-03-07"],["25055","916","2025-03-06"],["25054","384","2025-03-05"],["25053","899","2025-03-04"],["25052","337","2025-03-03"],["25051","973","2025-03-02"],["25050","570","2025-03-01"],["25049","037","2025-02-28"],["25048","570","2025-02-27"],["25047","806","2025-02-26"],["25046","372","2025-02-25"],["25045","722","2025-02-24"],["25044","805","2025-02-23"],["25043","552","2025-02-22"],["25042","675","2025-02-21"],["25041","916","2025-02-20"],["25040","875","2025-02-19"],["25039","588","2025-02-18"],["25038","366","2025-02-17"],["25037","578","2025-02-16"],["25036","521","2025-02-15"],["25035","849","2025-02-14"],["25034","309","2025-02-13"],["25033","934","2025-02-12"],["25032","392","2025-02-11"],["25031","513","2025-02-10"],["25030","297","2025-02-09"],["25029","489","2025-02-08"],["25028","822","2025-02-07"],["25027","048","2025-02-06"],["25026","346","2025-01-26"],["25025","677","2025-01-25"],["25024","228","2025-01-24"],["25023","788","2025-01-23"],["25022","484","2025-01-22"],["25021","346","2025-01-21"],["25020","159","2025-01-20"],["25019","734","2025-01-19"],["25018","292","2025-01-18"],["25017","956","2025-01-17"],["25016","963","2025-01-16"],["25015","398","2025-01-15"],["25014","508","2025-01-14"],["25013","978","2025-01-13"],["25012","471","2025-01-12"],["25011","027","2025-01-11"],["25010","143","2025-01-10"],["25009","806","2025-01-09"],["25008","128","2025-01-08"],["25007","362","2025-01-07"],["25006","656","2025-01-06"],["25005","617","2025-01-05"],["25004","351","2025-01-04"],["25003","168","2025-01-03"],["25002","900","2025-01-02"],["25001","123","2025-01-01"],["24352","691","2024-12-31"],["24351","788","2024-12-30"],["24350","220","2024-12-29"],["24349","907","2024-12-28"],["24348","192","2024-12-27"],["24347","893","2024-12-26"],["24346","677","2024-12-25"],["24345","620","2024-12-24"],["24344","546","2024-12-23"],["24343","481","2024-12-22"],["24342","084","2024-12-21"],["24341","653","2024-12-20"],["24340","031","2024-12-19"],["24339","918","2024-12-18"],["24338","155","2024-12-17"],["24337","172","2024-12-16"],["24336","249","2024-12-15"],["24335","499","2024-12-14"],["24334","746","2024-12-13"],["24333","848","2024-12-12"],["24332","679","2024-12-11"],["24331","712","2024-12-10"],["24330","811","2024-12-09"],["24329","147","2024-12-08"],["24328","125","2024-12-07"],["24327","134","2024-12-06"],["24326","257","2024-12-05"],["24325","023","2024-12-04"],["24324","630","2024-12-03"],["24323","914","2024-12-02"],["24322","678","2024-12-01"],["24321","050","2024-11-30"],["24320","863","2024-11-29"],["24319","793","2024-11-28"],["24318","243","2024-11-27"],["24317","355","2024-11-26"],["24316","332","2024-11-25"],["24315","071","2024-11-24"],["24314","080","2024-11-23"],["24313","471","2024-11-22"],["24312","413","2024-11-21"],["24311","533","2024-11-20"]];
+
+/* ============================================================
+   存储
+   ============================================================ */
+const KEY = 'pl3.tool.v1';
+
+function emptyState() {
+  return {
+    slips: [],
+    draws: {},
+    settings: { dailyLimit: 100, monthlyLimit: 1000, lastIssue: '' },
+    history: HISTORY_SEED.map(r => r.slice())
+  };
+}
+let storageBroken = false;
+function loadState() {
+  const base = emptyState();
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return base;
+    const o = JSON.parse(raw) || {};
+    return {
+      slips: Array.isArray(o.slips) ? o.slips : [],
+      draws: o.draws && typeof o.draws === 'object' ? o.draws : {},
+      settings: Object.assign(base.settings, o.settings || {}),
+      history: Array.isArray(o.history) && o.history.length ? o.history : HISTORY_SEED.map(r => r.slice())
+    };
+  } catch (e) {
+    storageBroken = true;
+    return base;
+  }
+}
+let state = loadState();
+
+function saveState() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(state));
+  } catch (e) {
+    if (!storageBroken) {
+      storageBroken = true;
+      toast('浏览器禁止了本地存储，请用「导出备份」保存数据');
+    }
+  }
+}
+
+/* ============================================================
+   小工具
+   ============================================================ */
+const $ = id => document.getElementById(id);
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+}
+function signed(v) { return (v < 0 ? '−¥' : '+¥') + Math.abs(v); }
+function netCls(v) { return v < 0 ? 'neg' : v > 0 ? 'pos' : ''; }
+function pad2(n) { return String(n).padStart(2, '0'); }
+function ymd(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+function sameDay(a, b) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); }
+function sameMonth(a, b) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth(); }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function range(n) { const out = []; for (let i = 0; i < n; i++) out.push(i); return out; }
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = randInt(i + 1);
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function randInt(max) {
+  if (max <= 1) return 0;
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    const buf = new Uint32Array(1);
+    const lim = Math.floor(4294967296 / max) * max;
+    for (let i = 0; i < 64; i++) {
+      crypto.getRandomValues(buf);
+      if (buf[0] < lim) return buf[0] % max;
+    }
+  }
+  return Math.floor(Math.random() * max);
+}
+let toastTimer = null;
+function toast(msg) {
+  const el = $('toast');
+  el.textContent = msg;
+  el.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('on'), 2600);
+}
+
+/* ============================================================
+   界面状态
+   ============================================================ */
+const sel = { straight: [new Set(), new Set(), new Set()], group: new Set() };
+const ui = { tab: 'straight' };
+let cart = [];
+
+/* ============================================================
+   选号区
+   ============================================================ */
+function digitsHtml(set) {
+  return range(10).map(d => '<button class="digit' + (set.has(d) ? ' on' : '') + '" data-digit="' + d + '">' + d + '</button>').join('');
+}
+
+function buildPads() {
+  const wrap = $('padWrap');
+  if (ui.tab === 'straight') {
+    const labels = ['百位', '十位', '个位'];
+    wrap.innerHTML = labels.map((lab, i) =>
+      '<div class="row"><span class="rowlab">' + lab + '</span>' +
+      '<div class="digits">' + digitsHtml(sel.straight[i]) + '</div>' +
+      '<button class="mini" data-clearpos="' + i + '">清</button></div>'
+    ).join('') +
+      '<div class="row-actions">' +
+      '<button class="mini" data-fillall="1">全选 0-9</button>' +
+      '<button class="mini" data-fillall="0">全部清空</button></div>';
+  } else {
+    wrap.innerHTML =
+      '<div class="row"><span class="rowlab">号码池</span>' +
+      '<div class="digits">' + digitsHtml(sel.group) + '</div>' +
+      '<button class="mini" data-clearpos="g">清</button></div>' +
+      '<p class="hint">组选 3：选 ≥2 个号，含「两同一异」的所有组合；组选 6：选 ≥3 个号，含「三号全不同」的所有组合。</p>';
+  }
+}
+
+function previewCodes(codes) {
+  if (!codes.length) return '';
+  const head = codes.slice(0, 14).join(' ');
+  return head + (codes.length > 14 ? ' …共 ' + codes.length + ' 注' : '');
+}
+
+function renderPick() {
+  const pv = $('preview');
+  const acts = $('pickActions');
+
+  if (ui.tab === 'straight') {
+    const parts = [0, 1, 2].map(i => Array.from(sel.straight[i]).sort((a, b) => a - b));
+    const n = straightCount(parts[0], parts[1], parts[2]);
+    if (n === 0) {
+      pv.innerHTML = '<span class="ph">在百 / 十 / 个位各选至少 1 个号码</span>';
+    } else {
+      const codes = straightCodes(parts[0], parts[1], parts[2]);
+      pv.innerHTML = '<div><b>' + n + '</b> <span class="muted">注 · ¥' + (n * UNIT) + '</span></div>' +
+        '<div class="codes">' + esc(previewCodes(codes)) + '</div>';
+    }
+    acts.innerHTML = '<button class="btn primary" data-act="addStraight"' + (n ? '' : ' disabled') + '>加入清单</button>' +
+      '<button class="btn ghost" data-act="clearSel">清空选择</button>';
+  } else {
+    const pool = Array.from(sel.group).sort((a, b) => a - b);
+    const n3 = g3Count(pool.length), n6 = g6Count(pool.length);
+    if (!pool.length) {
+      pv.innerHTML = '<span class="ph">在号码池里选号：2 个起可买组选 3，3 个起可买组选 6</span>';
+    } else {
+      pv.innerHTML =
+        '<div><span class="muted">组选3</span> <b>' + n3 + '</b> <span class="muted">注 ¥' + (n3 * UNIT) + '</span>' +
+        '<span class="muted" style="margin:0 8px">·</span>' +
+        '<span class="muted">组选6</span> <b>' + n6 + '</b> <span class="muted">注 ¥' + (n6 * UNIT) + '</span></div>' +
+        '<div class="codes">号码池：' + pool.join(',') + '</div>';
+    }
+    acts.innerHTML =
+      '<button class="btn primary" data-act="addG3"' + (n3 ? '' : ' disabled') + '>加组选3（' + n3 + ' 注）</button>' +
+      '<button class="btn primary" data-act="addG6"' + (n6 ? '' : ' disabled') + '>加组选6（' + n6 + ' 注）</button>' +
+      '<button class="btn ghost" data-act="clearSel">清空选择</button>';
+  }
+}
+
+function addItem(mode, codes, desc) {
+  if (!codes.length) return;
+  cart.push({ mode, codes, desc, count: codes.length, amount: codes.length * UNIT });
+  renderCart();
+  toast('已加入 ' + MODE_LABEL[mode] + ' ' + codes.length + ' 注');
+}
+
+/* ============================================================
+   清单
+   ============================================================ */
+function renderCart() {
+  const list = $('cartList');
+  const totalN = cart.reduce((s, i) => s + i.count, 0);
+  const totalM = cart.reduce((s, i) => s + i.amount, 0);
+  $('cartCount').textContent = totalN + ' 注 / ¥' + totalM;
+  $('cartTotal').textContent = '¥' + totalM;
+
+  if (!cart.length) {
+    list.innerHTML = '<p class="empty">还没有选号。<br>左侧选好号码后点「加入清单」，也可以直接用机选。</p>';
+  } else {
+    list.innerHTML = cart.map((it, i) =>
+      '<div class="cart-item">' +
+        '<div class="ci-top">' +
+          '<span class="pill ' + it.mode + '">' + MODE_LABEL[it.mode] + '</span>' +
+          '<span class="ci-desc" title="' + esc(it.desc) + '">' + esc(it.desc) + '</span>' +
+          '<button class="x" data-del="' + i + '">×</button>' +
+        '</div>' +
+        '<div class="ci-meta"><span>' + it.count + ' 注 / ¥' + it.amount + '</span>' +
+        '<span class="mono">' + esc(it.codes.slice(0, 8).join(' ')) + (it.count > 8 ? ' …' : '') + '</span></div>' +
+      '</div>'
+    ).join('');
+  }
+
+  const daily = Number(state.settings.dailyLimit) || 0;
+  const used = spentToday();
+  if (!daily) {
+    $('cartHint').textContent = '未设每日上限。建议先在下面「预算设置」里定一个，超了会自动拦住。';
+  } else {
+    const after = used + totalM;
+    $('cartHint').textContent = '今日已用 ¥' + used + ' / 上限 ¥' + daily +
+      (totalM ? '；存入后为 ¥' + after + (after > daily ? '（超上限，会被拦下）' : '') : '');
+  }
+}
+
+/* ============================================================
+   账本
+   ============================================================ */
+function spentToday() {
+  const now = new Date();
+  return state.slips.filter(s => sameDay(new Date(s.createdAt), now)).reduce((a, s) => a + s.amount, 0);
+}
+function spentMonth() {
+  const now = new Date();
+  return state.slips.filter(s => sameMonth(new Date(s.createdAt), now)).reduce((a, s) => a + s.amount, 0);
+}
+
+function renderStats() {
+  const now = new Date();
+  const mSlips = state.slips.filter(s => sameMonth(new Date(s.createdAt), now));
+  const todayAmt = spentToday();
+  const monthAmt = mSlips.reduce((a, s) => a + s.amount, 0);
+  const monthPrize = mSlips.reduce((a, s) => a + slipResult(s, state.draws).prize, 0);
+  const allAmt = state.slips.reduce((a, s) => a + s.amount, 0);
+  const allPrize = state.slips.reduce((a, s) => a + slipResult(s, state.draws).prize, 0);
+  const allWin = state.slips.reduce((a, s) => a + slipResult(s, state.draws).win, 0);
+  const daily = Number(state.settings.dailyLimit) || 0;
+
+  const cell = (k, v, s, cls) =>
+    '<div class="stat"><div class="k">' + k + '</div><div class="v ' + (cls || '') + '">' + v + '</div>' +
+    (s ? '<div class="s">' + s + '</div>' : '') + '</div>';
+
+  $('stats').innerHTML =
+    cell('今日投入', '¥' + todayAmt, daily ? '上限 ¥' + daily : '未设上限') +
+    cell('本月投入', '¥' + monthAmt) +
+    cell('本月回收', '¥' + monthPrize) +
+    cell('本月净额', signed(monthPrize - monthAmt), '', netCls(monthPrize - monthAmt)) +
+    cell('累计净额', signed(allPrize - allAmt), '', netCls(allPrize - allAmt)) +
+    cell('累计中奖', allWin + ' 注', '');
+}
+
+function renderLedger() {
+  const tb = $('slipBody');
+  $('ledgerCount').textContent = state.slips.length ? state.slips.length + ' 张单子' : '';
+
+  if (!state.slips.length) {
+    tb.innerHTML = '<tr><td colspan="9"><p class="empty">账本还是空的。选号 → 存入账本，开奖后填开奖号，会自动判奖并算净额。</p></td></tr>';
+    return;
+  }
+
+  tb.innerHTML = state.slips.map(s => {
+    const r = slipResult(s, state.draws);
+    const draw = state.draws[s.issue] || '';
+    const desc = s.items.map(i => MODE_LABEL[i.mode] + ' · ' + i.desc).join('<br>');
+    const res = r.pending
+      ? '<span class="chip">待开奖</span>'
+      : (r.win ? '<span class="chip win">中 ' + r.win + ' 注</span>' : '<span class="chip lose">未中</span>');
+    const prize = r.pending ? '—' : '¥' + r.prize;
+    const net = r.pending ? '—' : signed(r.prize - s.amount);
+    return '<tr>' +
+      '<td>' + esc(s.issue) + '</td>' +
+      '<td class="desc">' + desc + '</td>' +
+      '<td class="num">' + s.count + '</td>' +
+      '<td class="num">¥' + s.amount + '</td>' +
+      '<td class="mono">' + (draw || '—') + '</td>' +
+      '<td>' + res + '</td>' +
+      '<td class="num">' + prize + '</td>' +
+      '<td class="num">' + net + '</td>' +
+      '<td><button class="x" data-delslip="' + s.id + '">×</button></td>' +
+    '</tr>';
+  }).join('');
+}
+
+function renderBudgetChip() {
+  const daily = Number(state.settings.dailyLimit) || 0;
+  const used = spentToday();
+  const chip = $('budgetChip');
+  if (!daily) {
+    chip.innerHTML = '<div class="bc-top"><span>今日已用 <b>¥' + used + '</b></span><span>未设上限</span></div>';
+    return;
+  }
+  const pct = Math.min(100, (used / daily) * 100);
+  const color = pct >= 100 ? '#b7332a' : pct >= 80 ? '#b4801f' : '#1c7a4d';
+  const right = used >= daily ? '已达上限' : '余 ¥' + (daily - used);
+  chip.innerHTML =
+    '<div class="bc-top"><span>今日 <b>¥' + used + '</b> / ¥' + daily + '</span>' +
+    '<span style="color:' + color + '">' + right + '</span></div>' +
+    '<div class="bar"><i style="width:' + pct + '%;background:' + color + '"></i></div>';
+}
+
+/* ============================================================
+   历史统计 & 参考号
+   ============================================================ */
+let genResult = null;
+
+function poolForMode(mode) {
+  if (mode === 'g6') return g6Codes(range(10));
+  if (mode === 'g3') return g3Codes(range(10));
+  const out = [];
+  for (let i = 0; i < 1000; i++) out.push(String(i).padStart(3, '0'));
+  return out;
+}
+
+function barsHtml(counts, theory, showLabel) {
+  const max = Math.max(1, ...counts, ...theory);
+  return counts.map((c, i) => {
+    const h = (c / max * 100).toFixed(1);
+    const t = (theory[i] / max * 100).toFixed(1);
+    const lab = showLabel(i) ? i : '';
+    return '<div class="bcol" title="' + i + '：实际 ' + c + ' 期 / 理论 ' + theory[i].toFixed(1) + ' 期">' +
+      '<div class="btrack"><i class="breal" style="height:' + h + '%"></i>' +
+      '<i class="btheory" style="bottom:' + t + '%"></i></div>' +
+      '<span class="blab">' + lab + '</span></div>';
+  }).join('');
+}
+
+function renderHistory() {
+  const h = state.history || [];
+  const st = histStats(h);
+  const n = st.n;
+  $('histCount').textContent = n ? n + ' 期' : '无数据';
+
+  if (!n) {
+    $('histMeta').textContent = '暂无历史数据';
+    $('sumMeta').textContent = '';
+    $('spanMeta').textContent = '';
+    $('sumBars').innerHTML = '<p class="empty">没有历史数据</p>';
+    $('spanBars').innerHTML = '';
+    $('shapeStats').innerHTML = '<p class="empty">没有历史数据</p>';
+    $('digitStats').innerHTML = '';
+    return;
+  }
+
+  const newest = h[0], oldest = h[h.length - 1];
+  const dated = h.find(r => r[2]);
+  $('histMeta').textContent = n + ' 期 · ' + (oldest[0] || '?') + ' → ' + (newest[0] || '?') +
+    (dated ? ' · 截止 ' + dated[2] : '');
+  const ps = topIdx(st.sum), pk = topIdx(st.span);
+  $('sumMeta').textContent = '峰值和值 ' + ps + '（' + st.sum[ps] + ' 期）';
+  $('spanMeta').textContent = '峰值跨度 ' + pk + '（' + st.span[pk] + ' 期）';
+
+  const tSum = THEORY.sum.map(x => n * x / 1000);
+  const tSpan = THEORY.span.map(x => n * x / 1000);
+  $('sumBars').innerHTML = barsHtml(st.sum, tSum, i => i % 2 === 0);
+  $('spanBars').innerHTML = barsHtml(st.span, tSpan, () => true);
+
+  const row = (label, got, theo) =>
+    '<div class="shape-row"><span>' + label + '</span><b>' + (got / n * 100).toFixed(1) + '%</b>' +
+    '<span class="muted">理论 ' + (theo / 10).toFixed(1) + '%（' + got + ' 期）</span></div>';
+  $('shapeStats').innerHTML =
+    row('组六 · 三个都不同', st.shape.g6, 720) +
+    row('组三 · 两个相同', st.shape.g3, 270) +
+    row('豹子 · 三个相同', st.shape.bao, 10);
+
+  $('digitStats').innerHTML = st.digit.map((c, d) =>
+    '<span class="dchip"><b>' + d + '</b> ' + c + ' 次</span>').join('');
+}
+
+function shapeName(code) {
+  const k = shapeOf(code);
+  return k === 'bao' ? '豹子' : k === 'g3' ? '组三' : '组六';
+}
+
+function renderRecent() {
+  const h = (state.history || []).slice(0, 10);
+  const box = $('recentList');
+  if (!h.length) {
+    $('recentMeta').textContent = '';
+    box.innerHTML = '<p class="empty">没有历史数据</p>';
+    return;
+  }
+  const sums = h.map(r => sumOf(r[1]));
+  const spans = h.map(r => spanOf(r[1]));
+  const avg = a => (a.reduce((x, y) => x + y, 0) / a.length).toFixed(1);
+  $('recentMeta').textContent = h.length + ' 期 · 平均和值 ' + avg(sums) + ' · 平均跨度 ' + avg(spans);
+  box.innerHTML = h.map((r, i) =>
+    '<div class="rcell' + (i === 0 ? ' latest' : '') + '" title="期号 ' + esc(r[0] || '—') + '　号码 ' + esc(r[1]) + '">' +
+      '<div class="rissue"><span>' + esc(r[0] || '—') + '</span>' +
+        '<span class="rshape">' + shapeName(r[1]) + '</span></div>' +
+      '<div class="rcode">' + esc(r[1]) + '</div>' +
+      '<div class="rmeta"><span>和值 <b>' + sums[i] + '</b></span>' +
+        '<span>跨度 <b>' + spans[i] + '</b></span></div>' +
+    '</div>').join('');
+}
+
+function renderGenOut() {
+  const box = $('genOut');
+  const btn = $('btnGenAdd');
+  if (!genResult) {
+    box.innerHTML = '<p class="empty">点「生成参考号」抽几注。抽出来的号码只是按历史分布挑的，不代表更可能中。</p>';
+    btn.disabled = true;
+    return;
+  }
+  const { codes, basis } = genResult;
+  const sums = codes.map(sumOf);
+  const spans = codes.map(spanOf);
+  const hot = state.history.length ? topIndexes(histStats(state.history).sum, 3) : [];
+  const hitHot = sums.filter(s => hot.indexOf(s) >= 0).length;
+  box.innerHTML =
+    '<div class="genlist">' + codes.map((c, i) =>
+      '<span class="gencode"><b>' + c + '</b><i>和' + sums[i] + ' 跨' + spans[i] + '</i></span>').join('') + '</div>' +
+    '<p class="hint">本批 ' + codes.length + ' 注：和值 ' + Math.min(...sums) + '–' + Math.max(...sums) +
+    '，跨度 ' + Math.min(...spans) + '–' + Math.max(...spans) +
+    (basis === 'weighted' && hot.length
+      ? '；其中 ' + hitHot + ' 注落在历史最高频的和值 ' + hot.join(' / ') + ' 上'
+      : '') +
+    '。这批号跟下期开奖没有关系，别当预告。</p>';
+  btn.disabled = false;
+}
+
+function doGenerate() {
+  const mode = $('genMode').value;
+  const n = Math.max(1, Math.min(50, Math.round(Number($('genCount').value) || 5)));
+  const basis = $('genBasis').value;
+  const pool = poolForMode(mode);
+  let weights = pool.map(() => 1);
+  if (basis === 'weighted' && state.history.length) {
+    const wm = refWeightMap(state.history);
+    weights = pool.map(c => wm.weightOf(c));
+  }
+  genResult = { mode, basis, codes: sampleWeighted(pool, weights, n, randInt) };
+  renderGenOut();
+}
+
+/* ---- 历史数据维护 ---- */
+function keyOfRow(r) { return r[0] ? 'i:' + r[0] : 'c:' + r[1]; }
+function historyCmp(a, b) {
+  const ai = Number(a[0]) || 0, bi = Number(b[0]) || 0;
+  if (ai !== bi) return bi - ai;
+  return String(b[2] || '').localeCompare(String(a[2] || ''));
+}
+function mergeHistory(rows) {
+  const map = new Map();
+  for (const r of state.history) map.set(keyOfRow(r), r);
+  let added = 0;
+  for (const r of rows) {
+    if (!/^\d{3}$/.test(String(r[1] || ''))) continue;
+    const k = keyOfRow(r);
+    if (map.has(k)) continue;
+    map.set(k, [String(r[0] || ''), String(r[1]), String(r[2] || '')]);
+    added++;
+  }
+  state.history = [...map.values()].sort(historyCmp);
+  return added;
+}
+function parseHistoryText(text) {
+  const out = [];
+  for (const line of String(text || '').split(/\r?\n/)) {
+    const s = line.trim();
+    if (!s || /^[#/]/.test(s)) continue;
+    const tok = s.match(/\d+/g) || [];
+    if (!tok.length) continue;
+    let issue = '', code = '';
+    if (tok.length === 1) {
+      if (tok[0].length !== 3) continue;
+      code = tok[0];
+    } else if (tok.length === 2) {
+      if (tok[0].length < 4) continue;
+      issue = tok[0]; code = tok[1];
+    } else if (tok[0].length >= 4) {
+      issue = tok[0]; code = tok.slice(1).join('');
+    } else if (tok.length === 3 && tok.every(t => t.length === 1)) {
+      code = tok.join('');
+    } else {
+      continue;
+    }
+    if (!/^\d{3}$/.test(code)) continue;
+    out.push([issue, code, '']);
+  }
+  return out;
+}
+function exportHistory() {
+  if (!state.history.length) { toast('没有历史数据'); return; }
+  download('排列三历史-' + ymd(new Date()) + '.json',
+    JSON.stringify({ app: 'pl3-history', exportedAt: new Date().toISOString(), rows: state.history }),
+    'application/json');
+  toast('已导出 ' + state.history.length + ' 期');
+}
+async function onlineUpdate() {
+  toast('正在联网拉取最新开奖…');
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 9000);
+  try {
+    const got = [];
+    for (let p = 1; p <= 3; p++) {
+      const url = 'https://webapi.sporttery.cn/gateway/lottery/getHistoryPageListV1.qry'
+        + '?gameNo=35&provinceId=0&pageSize=100&isVerify=1&pageNo=' + p;
+      const res = await fetch(url, { signal: ctrl.signal, headers: { Accept: 'application/json' } });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const j = await res.json();
+      if (!j || !j.success) throw new Error('接口拒绝');
+      for (const it of (j.value && j.value.list) || []) {
+        const code = String(it.lotteryDrawResult || '').replace(/\D/g, '');
+        if (!/^\d{3}$/.test(code)) continue;
+        got.push([String(it.lotteryDrawNum || ''), code, String(it.lotteryDrawTime || '')]);
+      }
+    }
+    clearTimeout(timer);
+    const added = mergeHistory(got);
+    saveState();
+    renderAll();
+    toast(added ? '联网更新成功，新增 ' + added + ' 期' : '联网更新成功，没有新期次');
+  } catch (e) {
+    clearTimeout(timer);
+    toast('联网失败（' + (e && e.name === 'AbortError' ? '超时' : (e && e.message) || '未知错误') +
+      '），用下面的粘贴导入也行');
+  }
+}
+
+/* ============================================================
+   渲染总入口
+   ============================================================ */
+function renderAll() {
+  buildPads();
+  renderPick();
+  renderCart();
+  renderStats();
+  renderLedger();
+  renderBudgetChip();
+  renderHistory();
+  renderRecent();
+  renderGenOut();
+}
+
+/* ============================================================
+   出号单文本
+   ============================================================ */
+function cartTotals() {
+  return {
+    n: cart.reduce((s, i) => s + i.count, 0),
+    m: cart.reduce((s, i) => s + i.amount, 0)
+  };
+}
+function slipText() {
+  const issue = ($('issue').value || '').trim() || '（未填期号）';
+  const t = cartTotals();
+  const lines = [];
+  lines.push('排列三 出号单　期号：' + issue);
+  lines.push('生成：' + new Date().toLocaleString('zh-CN'));
+  lines.push('--------------------------------');
+  for (const it of cart) {
+    lines.push('【' + MODE_LABEL[it.mode] + '】' + it.desc);
+    lines.push('　' + it.count + ' 注 / ¥' + it.amount);
+    if (it.count <= 80) {
+      lines.push('　' + it.codes.join(' '));
+    } else {
+      lines.push('　（共 ' + it.count + ' 注，按上面的复式投注）');
+    }
+    lines.push('');
+  }
+  lines.push('--------------------------------');
+  lines.push('合计 ' + t.n + ' 注　¥' + t.m);
+  lines.push('每注 2 元；直选 1040/注，组选3 346/注，组选6 173/注。');
+  lines.push('请到实体体彩店投注，理性购彩。');
+  return lines.join('\n');
+}
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    } catch (e2) {
+      return false;
+    }
+  }
+}
+
+/* ============================================================
+   机选
+   ============================================================ */
+function numOrNull(v) {
+  const s = String(v || '').trim();
+  if (s === '') return null;
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+}
+function digitsFrom(v) {
+  return String(v || '').split(/[^0-9]+/).filter(Boolean).map(Number).filter(d => d >= 0 && d <= 9);
+}
+function readRandCfg() {
+  return {
+    sumMin: numOrNull($('rSumMin').value),
+    sumMax: numOrNull($('rSumMax').value),
+    spanMin: numOrNull($('rSpanMin').value),
+    spanMax: numOrNull($('rSpanMax').value),
+    odd: $('rOdd').value,
+    must: digitsFrom($('rMust').value),
+    ban: digitsFrom($('rBan').value)
+  };
+}
+function describeCond(mode, c) {
+  const bits = [];
+  if (c.sumMin != null || c.sumMax != null) bits.push('和值 ' + (c.sumMin != null ? c.sumMin : '?') + '-' + (c.sumMax != null ? c.sumMax : '?'));
+  if (c.spanMin != null || c.spanMax != null) bits.push('跨度 ' + (c.spanMin != null ? c.spanMin : '?') + '-' + (c.spanMax != null ? c.spanMax : '?'));
+  if (c.odd !== 'any') bits.push(c.odd + ' 个奇数');
+  if (c.must.length) bits.push('必含 ' + c.must.join(','));
+  if (c.ban.length) bits.push('排除 ' + c.ban.join(','));
+  return '机选' + (bits.length ? ' · ' + bits.join(' · ') : '');
+}
+function doRandom() {
+  const n = Math.max(1, Math.min(50, Math.round(Number($('rCount').value) || 5)));
+  const mode = $('rMode').value;
+  const c = readRandCfg();
+  const used = new Set();
+  const out = [];
+  const maxTries = Math.max(600, n * 500);
+  for (let t = 0; t < maxTries && out.length < n; t++) {
+    let d;
+    if (mode === 'straight') {
+      d = [randInt(10), randInt(10), randInt(10)];
+    } else if (mode === 'g6') {
+      d = shuffle(range(10)).slice(0, 3);
+    } else {
+      const p = randInt(10);
+      let s = randInt(9);
+      if (s >= p) s++;
+      d = [p, p, s];
+    }
+    if (!condOk(d, c)) continue;
+    const code = mode === 'straight' ? d.join('') : d.slice().sort((a, b) => a - b).join('');
+    if (used.has(code)) continue;
+    used.add(code);
+    out.push(code);
+  }
+  if (!out.length) { toast('这些条件下没找到号码，条件放宽一点再试'); return; }
+  if (out.length < n) toast('只找到 ' + out.length + ' 注（条件比较严）');
+  addItem(mode, out, describeCond(mode, c) + ' · ' + out.length + '注');
+}
+
+/* ============================================================
+   开奖 / 核对
+   ============================================================ */
+function parseCode(raw) {
+  const d = String(raw || '').replace(/\D/g, '');
+  return d.length === 3 ? d : null;
+}
+
+/* ============================================================
+   备份
+   ============================================================ */
+function download(name, text, type) {
+  const blob = new Blob([text], { type: type || 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+function exportJson() {
+  download('排列三账本-' + ymd(new Date()) + '.json',
+    JSON.stringify({ app: 'pl3', version: 1, exportedAt: new Date().toISOString(), data: state }, null, 2),
+    'application/json');
+  toast('已导出备份');
+}
+function exportCsv() {
+  if (!state.slips.length) { toast('账本还是空的'); return; }
+  const head = ['期号', '录入时间', '内容', '注数', '金额', '开奖号', '中奖注数', '奖金', '净额'];
+  const rows = state.slips.map(s => {
+    const r = slipResult(s, state.draws);
+    return [
+      s.issue,
+      new Date(s.createdAt).toLocaleString('zh-CN'),
+      s.items.map(i => MODE_LABEL[i.mode] + '·' + i.desc).join(' | '),
+      s.count, s.amount,
+      state.draws[s.issue] || '',
+      r.pending ? '' : r.win,
+      r.pending ? '' : r.prize,
+      r.pending ? '' : (r.prize - s.amount)
+    ];
+  });
+  const csv = [head].concat(rows)
+    .map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(','))
+    .join('\r\n');
+  download('排列三账本-' + ymd(new Date()) + '.csv', '\ufeff' + csv, 'text/csv;charset=utf-8');
+  toast('已导出 CSV');
+}
+
+/* ============================================================
+   事件绑定
+   ============================================================ */
+let inited = false;
+function init() {
+  if (inited) return;
+  inited = true;
+
+  // 选号区：数字 / 清位 / 全选
+  $('padWrap').addEventListener('click', e => {
+    const d = e.target.closest('[data-digit]');
+    if (d) {
+      const digit = Number(d.dataset.digit);
+      if (ui.tab === 'straight') {
+        // 直选：按行的顺序定位百 / 十 / 个位
+        const rows = Array.from($('padWrap').querySelectorAll('.digits'));
+        const idx = rows.indexOf(d.closest('.digits'));
+        const target = sel.straight[idx];
+        if (target) target.has(digit) ? target.delete(digit) : target.add(digit);
+      } else {
+        sel.group.has(digit) ? sel.group.delete(digit) : sel.group.add(digit);
+      }
+      buildPads();
+      renderPick();
+      return;
+    }
+    const clr = e.target.closest('[data-clearpos]');
+    if (clr) {
+      const v = clr.dataset.clearpos;
+      if (v === 'g') sel.group.clear();
+      else sel.straight[Number(v)].clear();
+      buildPads(); renderPick();
+      return;
+    }
+    const fill = e.target.closest('[data-fillall]');
+    if (fill) {
+      const on = fill.dataset.fillall === '1';
+      sel.straight.forEach(s => { s.clear(); if (on) range(10).forEach(d => s.add(d)); });
+      buildPads(); renderPick();
+    }
+  });
+
+  // 选号区：操作按钮
+  $('pickActions').addEventListener('click', e => {
+    const b = e.target.closest('[data-act]');
+    if (!b) return;
+    const act = b.dataset.act;
+    if (act === 'clearSel') {
+      sel.straight.forEach(s => s.clear());
+      sel.group.clear();
+      buildPads(); renderPick();
+      return;
+    }
+    if (act === 'addStraight') {
+      const parts = [0, 1, 2].map(i => Array.from(sel.straight[i]).sort((a, b) => a - b));
+      const codes = straightCodes(parts[0], parts[1], parts[2]);
+      if (!codes.length) return;
+      const desc = '百:' + parts[0].join(',') + ' 十:' + parts[1].join(',') + ' 个:' + parts[2].join(',');
+      addItem('straight', codes, desc);
+      sel.straight.forEach(s => s.clear());
+      buildPads(); renderPick();
+      return;
+    }
+    if (act === 'addG3' || act === 'addG6') {
+      const pool = Array.from(sel.group).sort((a, b) => a - b);
+      const mode = act === 'addG3' ? 'g3' : 'g6';
+      const codes = mode === 'g3' ? g3Codes(pool) : g6Codes(pool);
+      if (!codes.length) return;
+      addItem(mode, codes, '号码池 ' + pool.join(','));
+      sel.group.clear();
+      buildPads(); renderPick();
+    }
+  });
+
+  // 切换直选 / 组选
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      ui.tab = t.dataset.tab;
+      document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
+      buildPads(); renderPick();
+    });
+  });
+
+  // 清单删除
+  $('cartList').addEventListener('click', e => {
+    const b = e.target.closest('[data-del]');
+    if (!b) return;
+    cart.splice(Number(b.dataset.del), 1);
+    renderCart();
+  });
+  $('btnClearCart').addEventListener('click', () => {
+    if (!cart.length) return;
+    cart = [];
+    renderCart();
+    toast('清单已清空');
+  });
+
+  // 复制出号单
+  $('btnCopy').addEventListener('click', async () => {
+    if (!cart.length) { toast('清单是空的'); return; }
+    const ok = await copyText(slipText());
+    toast(ok ? '出号单已复制' : '复制失败，请手动选中文本复制');
+  });
+
+  // 存入账本
+  $('btnSave').addEventListener('click', () => {
+    if (!cart.length) { toast('清单是空的'); return; }
+    const issue = ($('issue').value || '').trim();
+    if (!issue) { toast('先填期号'); $('issue').focus(); return; }
+    const t = cartTotals();
+    const daily = Number(state.settings.dailyLimit) || 0;
+    const monthly = Number(state.settings.monthlyLimit) || 0;
+    if (daily > 0 && spentToday() + t.m > daily) {
+      toast('超出今日预算：已用 ¥' + spentToday() + '，本次 ¥' + t.m + '，上限 ¥' + daily);
+      return;
+    }
+    if (monthly > 0 && spentMonth() + t.m > monthly) {
+      toast('超出本月预算：已用 ¥' + spentMonth() + '，本次 ¥' + t.m + '，上限 ¥' + monthly);
+      return;
+    }
+    state.slips.unshift({
+      id: uid(), issue, createdAt: new Date().toISOString(),
+      items: cart.map(i => ({ mode: i.mode, desc: i.desc, codes: i.codes.slice(), count: i.count, amount: i.amount })),
+      count: t.n, amount: t.m
+    });
+    state.settings.lastIssue = issue;
+    cart = [];
+    saveState();
+    if (!$('drawIssue').value.trim()) $('drawIssue').value = issue;
+    renderAll();
+    toast('已存入账本：' + t.n + ' 注 ¥' + t.m);
+  });
+
+  // 机选
+  $('btnRand').addEventListener('click', doRandom);
+
+  // 开奖核对
+  $('btnDraw').addEventListener('click', () => {
+    const issue = ($('drawIssue').value || '').trim();
+    if (!issue) { toast('先填要核对的期号'); $('drawIssue').focus(); return; }
+    const raw = ($('drawCode').value || '').trim();
+    if (raw === '') {
+      if (state.draws[issue]) {
+        delete state.draws[issue];
+        saveState(); renderAll();
+        toast('已清除该期开奖号');
+      } else {
+        toast('填 3 位开奖号再点核对');
+      }
+      return;
+    }
+    const code = parseCode(raw);
+    if (!code) { toast('开奖号要 3 位数字'); return; }
+    const mine = state.slips.filter(s => s.issue === issue);
+    if (!mine.length) { toast('账本里没有这个期号的单子'); return; }
+    state.draws[issue] = code;
+    saveState(); renderAll();
+    const prize = mine.reduce((a, s) => a + slipResult(s, state.draws).prize, 0);
+    toast(prize ? '已核对：这期共中 ¥' + prize : '已记录开奖号 ' + code + '：这期没中');
+  });
+
+  // 删除单张
+  $('slipBody').addEventListener('click', e => {
+    const b = e.target.closest('[data-delslip]');
+    if (!b) return;
+    const id = b.dataset.delslip;
+    const slip = state.slips.find(s => s.id === id);
+    if (!slip) return;
+    if (!confirm('删除这张单子？期号 ' + slip.issue + '，' + slip.count + ' 注 ¥' + slip.amount)) return;
+    state.slips = state.slips.filter(s => s.id !== id);
+    saveState(); renderAll();
+    toast('已删除');
+  });
+
+  // 预算
+  $('btnBudget').addEventListener('click', () => {
+    const d = Math.max(0, Math.round(Number($('dailyLimit').value) || 0));
+    const m = Math.max(0, Math.round(Number($('monthlyLimit').value) || 0));
+    state.settings.dailyLimit = d;
+    state.settings.monthlyLimit = m;
+    saveState(); renderAll();
+    toast('预算已保存：日上限 ' + (d ? '¥' + d : '不限') + '，月上限 ' + (m ? '¥' + m : '不限'));
+  });
+
+  // 备份
+  $('btnExport').addEventListener('click', exportJson);
+  $('btnCsv').addEventListener('click', exportCsv);
+  $('btnImport').addEventListener('click', () => $('fileInput').click());
+  $('fileInput').addEventListener('change', e => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const obj = JSON.parse(String(reader.result));
+        const data = obj && obj.data ? obj.data : obj;
+        if (!data || !Array.isArray(data.slips)) throw new Error('格式不对');
+        if (!confirm('导入会覆盖当前账本（' + state.slips.length + ' 张单子），继续？')) return;
+        state = {
+          slips: data.slips,
+          draws: data.draws && typeof data.draws === 'object' ? data.draws : {},
+          settings: Object.assign(emptyState().settings, data.settings || {})
+        };
+        saveState(); syncInputs(); renderAll();
+        toast('已导入 ' + state.slips.length + ' 张单子');
+      } catch (err) {
+        toast('导入失败：不是本工具导出的备份文件');
+      }
+      e.target.value = '';
+    };
+    reader.readAsText(f);
+  });
+  $('btnWipe').addEventListener('click', () => {
+    if (!confirm('清空全部数据（账本 + 开奖号 + 预算）？建议先导出备份。')) return;
+    state = emptyState();
+    cart = [];
+    saveState(); syncInputs(); renderAll();
+    toast('已清空');
+  });
+
+  // 参考号
+  $('btnGen').addEventListener('click', doGenerate);
+  $('btnGenAdd').addEventListener('click', () => {
+    if (!genResult) return;
+    const desc = '参考号 · ' + (genResult.basis === 'weighted' ? '和值/跨度加权' : '均匀随机');
+    addItem(genResult.mode, genResult.codes, desc);
+    genResult = null;
+    renderGenOut();
+  });
+
+  // 历史数据
+  $('btnHistImport').addEventListener('click', () => {
+    const rows = parseHistoryText($('histPaste').value);
+    if (!rows.length) { toast('没解析出有效记录，检查一下格式'); return; }
+    const added = mergeHistory(rows);
+    saveState(); renderAll();
+    $('histPaste').value = '';
+    $('histPasteHint').textContent = '';
+    toast(added ? ('已导入 ' + added + ' 期') : '这些期号都已经有了');
+  });
+  $('histPaste').addEventListener('input', () => {
+    const rows = parseHistoryText($('histPaste').value);
+    $('histPasteHint').textContent = rows.length ? ('识别到 ' + rows.length + ' 期') : '还没识别到有效行';
+  });
+  $('btnHistOnline').addEventListener('click', onlineUpdate);
+  $('btnHistExport').addEventListener('click', exportHistory);
+  $('btnHistReset').addEventListener('click', () => {
+    if (!confirm('把历史数据恢复成内置的 ' + HISTORY_SEED.length + ' 期？你自己导入的会丢掉。')) return;
+    state.history = HISTORY_SEED.map(r => r.slice());
+    saveState(); renderAll();
+    toast('已恢复内置数据');
+  });
+
+  // 输入同步
+  $('issue').addEventListener('input', () => { state.settings.lastIssue = $('issue').value.trim(); saveState(); });
+
+  syncInputs();
+  renderAll();
+
+  if (storageBroken) {
+    toast('提示：浏览器禁用了本地存储，数据只在本次打开有效，请及时导出备份');
+  }
+}
+
+function syncInputs() {
+  $('issue').value = state.settings.lastIssue || '';
+  $('dailyLimit').value = String(state.settings.dailyLimit || 0);
+  $('monthlyLimit').value = String(state.settings.monthlyLimit || 0);
+  $('drawIssue').value = state.slips.length ? state.slips[0].issue : '';
+  $('drawCode').value = '';
+}
+
+document.addEventListener('DOMContentLoaded', init);
+if (document.readyState === 'interactive' || document.readyState === 'complete') init();
+</script>
+</body>
+</html>
